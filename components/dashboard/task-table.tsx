@@ -16,6 +16,7 @@ interface TaskTableProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
+  setDeleteOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TaskTable({
@@ -23,6 +24,7 @@ export default function TaskTable({
   setOpen,
   setEditOpen,
   setSelectedTask,
+  setDeleteOpen,
 }: TaskTableProps) {
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
@@ -47,29 +49,44 @@ export default function TaskTable({
           </TableHeader>
 
           <TableBody>
-            {tasks.map((task) => (
-              <TableRow key={task.id}>
-                <TableCell>{task.title}</TableCell>
-                <TableCell>{task.description}</TableCell>
-                <TableCell>{task.dueDate}</TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedTask(task);
-                      setEditOpen(true);
-                    }}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button variant="destructive" size="sm">
-                    Delete
-                  </Button>
+            {tasks.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-6">
+                  No tasks available
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              tasks.map((task) => (
+                <TableRow key={task.id}>
+                  <TableCell>{task.title}</TableCell>
+                  <TableCell>{task.description}</TableCell>
+                  <TableCell>{task.dueDate}</TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedTask(task);
+                        setEditOpen(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedTask(task);
+                        setDeleteOpen(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
