@@ -2,20 +2,30 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {Card,CardContent,CardHeader,CardTitle} from "@/components/ui/card";
+
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter();
+
+const handleSubmit = async () => {
+  try {
+    await signIn(email, password);
+    router.push("/dashboard");
+  } catch (error) {
+    console.error(error);
+    alert("Invalid email or password");
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
@@ -49,7 +59,8 @@ export default function LoginForm() {
             />
           </div>
 
-          <Button className="mx-auto block bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleSubmit} 
+           className="mx-auto block bg-blue-600 hover:bg-blue-700">
             Login
           </Button>
 
