@@ -2,16 +2,37 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { signUp } from "@/lib/auth-client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {Card,CardContent,CardHeader,CardTitle,} from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function RegisterForm() {
+  const router = useRouter();
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleSubmit = async () => {
+  try {
+    await signUp(fullName, email, password);
+
+    router.push("/dashboard");
+  } catch (error) {
+    console.error(error);
+    alert("Registration failed");
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
@@ -56,7 +77,10 @@ export default function RegisterForm() {
             />
           </div>
 
-          <Button className="mx-auto block bg-blue-600 hover:bg-blue-700">
+          <Button
+            onClick={handleSubmit}
+            className="mx-auto block bg-blue-600 hover:bg-blue-700"
+          >
             Create Account
           </Button>
 
