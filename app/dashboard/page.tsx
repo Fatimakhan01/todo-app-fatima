@@ -8,11 +8,13 @@ import EditTaskDialog from "@/components/dashboard/edit-task-dialog";
 import DeleteTaskDialog from "@/components/dashboard/delete-task-dialog";
 
 export interface Task {
-  id: number;
+  id: string;
   title: string;
   description: string;
   dueDate: string;
 }
+
+export type NewTask = Omit<Task, "id">;
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -21,15 +23,24 @@ export default function DashboardPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  // Add Task
-  const addTask = (task: Omit<Task, "id">) => {
-    setTasks((prev) => [
-      ...prev,
-      { id: Date.now(), ...task },
-    ]);
+  const addTask = async (task: NewTask) => {
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+
+      const newTask = await res.json();
+
+      setTasks((prev) => [...prev, newTask]);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // Update Task
   const updateTask = (updatedTask: Task) => {
     setTasks((prev) =>
       prev.map((task) =>
@@ -38,8 +49,7 @@ export default function DashboardPage() {
     );
   };
 
-  // Delete Task
-  const deleteTask = (id: number) => {
+  const deleteTask = (id: number | string) => {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
