@@ -15,7 +15,7 @@ import { Task } from "@/app/dashboard/page";
 interface AddTaskDialogProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  addTask: (task: Task) => void;
+  addTask: (task: Omit<Task, "id">) => void;
 }
 
 export default function AddTaskDialog({
