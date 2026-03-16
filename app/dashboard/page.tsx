@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import TaskTable from "@/components/dashboard/task-table";
 import AddTaskDialog from "@/components/dashboard/add-task-dialog";
@@ -22,6 +22,20 @@ export default function DashboardPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  
+  useEffect(() => {
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch("/api/tasks");
+      const data = await res.json();
+      setTasks(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchTasks();
+}, []);
 
   const addTask = async (task: NewTask) => {
     try {
