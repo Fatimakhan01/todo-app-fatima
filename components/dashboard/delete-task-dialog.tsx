@@ -13,7 +13,7 @@ interface DeleteTaskDialogProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedTask: Task | null;
-  deleteTask: (id: number) => void;
+  deleteTask: (id: string) => void;
 }
 
 export default function DeleteTaskDialog({
@@ -24,10 +24,18 @@ export default function DeleteTaskDialog({
 }: DeleteTaskDialogProps) {
   if (!selectedTask) return null;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+  try {
+    await fetch(`/api/tasks/${selectedTask.id}`, {
+      method: "DELETE",
+    });
+
     deleteTask(selectedTask.id);
     setOpen(false);
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

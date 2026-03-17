@@ -37,18 +37,31 @@ export default function EditTaskDialog({
     }
   }, [selectedTask]);
 
-  const handleUpdate = () => {
-    if (!selectedTask) return;
+ const handleUpdate = async () => {
+  if (!selectedTask) return;
 
-    updateTask({
-      id: selectedTask.id,
-      title,
-      description,
-      dueDate,
+  try {
+    const res = await fetch(`/api/tasks/${selectedTask.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        description,
+        dueDate,
+      }),
     });
 
+    const updatedTask = await res.json();
+
+    updateTask(updatedTask);
+
     setOpen(false);
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

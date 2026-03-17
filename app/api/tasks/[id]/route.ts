@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-export async function POST(req: Request) {
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -15,47 +18,40 @@ export async function POST(req: Request) {
       );
     }
 
+    const { id } = await params;   
+
     const body = await req.json();
     const { title, description, dueDate } = body;
 
-    const task = await prisma.task.create({
+    const updatedTask = await prisma.task.update({
+      where: { id },
       data: {
         title,
         description,
         dueDate: new Date(dueDate),
-
-        user: {
-          connect: {
-            id: session.user.id,
-          },
-        },
       },
     });
 
-    return NextResponse.json(task);
+    return NextResponse.json(updatedTask);
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
-      { error: "Failed to create task" },
+      { error: "Failed to update task" },
       { status: 500 }
     );
   }
 }
 
-export async function GET() {
-  try {
-    const tasks = await prisma.task.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
-    return NextResponse.json(tasks);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to fetch tasks" }, { status: 500 });
-  }
+  await prisma.task.delete({
+    where: { id },
+  });
+
+  return NextResponse.json({ message: "Task deleted" });
 }
-
-
