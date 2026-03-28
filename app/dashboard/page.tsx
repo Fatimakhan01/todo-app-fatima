@@ -6,6 +6,7 @@ import TaskTable from "@/components/dashboard/task-table";
 import AddTaskDialog from "@/components/dashboard/add-task-dialog";
 import EditTaskDialog from "@/components/dashboard/edit-task-dialog";
 import DeleteTaskDialog from "@/components/dashboard/delete-task-dialog";
+import SubscribeSection from "@/components/dashboard/subscribe-section";
 
 export interface Task {
   id: string;
@@ -78,7 +79,8 @@ export default function DashboardPage() {
         setSelectedTask={setSelectedTask}
         setDeleteOpen={setDeleteOpen}
       />
-
+     <SubscribeSection />
+     
       <AddTaskDialog
         open={open}
         setOpen={setOpen}
