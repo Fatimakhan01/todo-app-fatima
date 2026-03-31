@@ -39,23 +39,27 @@ export default function DashboardPage() {
 }, []);
 
   const addTask = async (task: NewTask) => {
-    try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(task),
-      });
+  try {
+    const res = await fetch("/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(task),
+    });
 
-      const newTask = await res.json();
-
-      setTasks((prev) => [...prev, newTask]);
-    } catch (error) {
-      console.error(error);
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error); 
+      return;
     }
-  };
 
+    const newTask = await res.json();
+    setTasks((prev) => [...prev, newTask]);
+  } catch (error) {
+    console.error(error);
+  }
+};
   const updateTask = (updatedTask: Task) => {
     setTasks((prev) =>
       prev.map((task) =>

@@ -17,13 +17,26 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { title, description, dueDate } = body;
+    const taskCount = await prisma.task.count({
+      where: { userId: session.user.id },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if ((!user?.subscriptionPlan || user.subscriptionPlan === "free") && taskCount >= 5) {
+  return NextResponse.json(
+    { error: "Free plan limit reached. Upgrade to Pro." },
+    { status: 403 }
+  );
+}
 
     const task = await prisma.task.create({
       data: {
         title,
         description,
-        dueDate: new Date(dueDate),
-
+      dueDate: dueDate ? new Date(dueDate) : null,
         user: {
           connect: {
             id: session.user.id,
