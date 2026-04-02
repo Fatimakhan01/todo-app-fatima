@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 SaaS To-Do Application (Next.js + Stripe)
 
-## Getting Started
+A full-stack SaaS To-Do application built with Next.js, Prisma, PostgreSQL, and Stripe.
+This app allows users to manage tasks with a subscription-based model (Free & Pro plans).
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🧩 Features
+
+### ✅ Core Features
+
+* User Authentication (Better Auth)
+* Create, Read, Update, Delete (CRUD) Tasks
+* Responsive UI with Tailwind CSS & shadcn/ui
+
+### 💳 SaaS Features
+
+* Stripe Checkout Integration
+* Subscription Plans (Free, Pro)
+* Secure Payment Flow
+* Webhook-based subscription updates
+* Access Control based on subscription
+
+---
+
+## 💻 Tech Stack
+
+### Frontend
+
+* Next.js (App Router)
+* React.js
+* Tailwind CSS
+* shadcn/ui
+
+### Backend
+
+* Prisma ORM
+* PostgreSQL (Neon DB)
+* Better Auth
+
+### Payments
+
+* Stripe Checkout
+* Stripe Webhooks
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file and add:
+
+```env
+DATABASE_URL=your_database_url
+BETTER_AUTH_SECRET=your_secret
+BETTER_AUTH_URL=http://localhost:3000
+
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+STRIPE_PRICE_PRO=price_...
+STRIPE_PRICE_PREMIUM=price_...
+
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧠 How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Subscription Flow
 
-## Learn More
+1. User clicks "Upgrade to Pro"
+2. Stripe Checkout session is created
+3. User completes payment
+4. Stripe sends webhook event
+5. App updates user subscription in database
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Access Control
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* Free Users → Max 5 tasks
+* Pro Users → Unlimited tasks
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔄 Webhook Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Run Stripe CLI:
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+Copy webhook secret to `.env`.
+
+---
+
+## 🚀 Getting Started
+
+```bash
+npm install
+npx prisma migrate dev
+npm run dev
+```
+
+---
+
