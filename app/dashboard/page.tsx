@@ -1,109 +1,32 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import TaskTable from "@/components/dashboard/task-table";
 import AddTaskDialog from "@/components/dashboard/add-task-dialog";
-import EditTaskDialog from "@/components/dashboard/edit-task-dialog";
-import DeleteTaskDialog from "@/components/dashboard/delete-task-dialog";
 import SubscribeSection from "@/components/dashboard/subscribe-section";
 
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-}
+import SearchInput from "@/components/tasks/search-input";
+import { getTasks } from "@/lib/actions/tasks/getTasks";
 
-export type NewTask = Omit<Task, "id">;
+export default async function DashboardPage({ searchParams }: any) {
+  const params = await searchParams;
 
-export default function DashboardPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [open, setOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  
-  useEffect(() => {
-  const fetchTasks = async () => {
-    try {
-      const res = await fetch("/api/tasks");
-      const data = await res.json();
-      setTasks(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const search = params?.search || "";
 
-  fetchTasks();
-}, []);
-
-  const addTask = async (task: NewTask) => {
-  try {
-    const res = await fetch("/api/tasks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      alert(err.error); 
-      return;
-    }
-
-    const newTask = await res.json();
-    setTasks((prev) => [...prev, newTask]);
-  } catch (error) {
-    console.error(error);
-  }
-};
-  const updateTask = (updatedTask: Task) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === updatedTask.id ? updatedTask : task
-      )
-    );
-  };
-
-  const deleteTask = (id: number | string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
-  };
+  const tasks = await getTasks(search);
 
   return (
     <div>
       <DashboardHeader />
+      <div className="px-4 mt-4">
+        <SearchInput defaultValue={search} />
+      </div>
 
-      <TaskTable
-        tasks={tasks}
-        setOpen={setOpen}
-        setEditOpen={setEditOpen}
-        setSelectedTask={setSelectedTask}
-        setDeleteOpen={setDeleteOpen}
-      />
-     <SubscribeSection />
-     
-      <AddTaskDialog
-        open={open}
-        setOpen={setOpen}
-        addTask={addTask}
-      />
+      <div className="px-4 mt-4 flex justify-end">
+        <AddTaskDialog />
+      </div>
 
-      <EditTaskDialog
-        open={editOpen}
-        setOpen={setEditOpen}
-        selectedTask={selectedTask}
-        updateTask={updateTask}
-      />
+      <TaskTable tasks={tasks} />
 
-      <DeleteTaskDialog
-        open={deleteOpen}
-        setOpen={setDeleteOpen}
-        selectedTask={selectedTask}
-        deleteTask={deleteTask}
-      />
+      <SubscribeSection />
     </div>
   );
 }
