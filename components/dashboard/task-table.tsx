@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,34 +8,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Task } from "@/app/dashboard/page";
+
+import EditTaskDialog from "@/components/dashboard/edit-task-dialog";
+import DeleteTaskDialog from "@/components/dashboard/delete-task-dialog";
+
+interface Task {
+  id: string;
+  title: string;
+  description: string | null;
+  dueDate: string | Date | null;
+}
 
 interface TaskTableProps {
   tasks: Task[];
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
-  setDeleteOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function TaskTable({
-  tasks,
-  setOpen,
-  setEditOpen,
-  setSelectedTask,
-  setDeleteOpen,
-}: TaskTableProps) {
+export default function TaskTable({ tasks }: TaskTableProps) {
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="bg-white shadow-sm rounded-lg border">
-        <div className="flex justify-end p-6">
-          <Button
-            className="bg-blue-600 hover:bg-blue-700"
-            onClick={() => setOpen(true)}
-          >
-            Add Task
-          </Button>
-        </div>
 
         <Table>
           <TableHeader>
@@ -60,29 +50,15 @@ export default function TaskTable({
                 <TableRow key={task.id}>
                   <TableCell>{task.title}</TableCell>
                   <TableCell>{task.description}</TableCell>
-                  <TableCell>{task.dueDate}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedTask(task);
-                        setEditOpen(true);
-                      }}
-                    >
-                      Edit
-                    </Button>
+                  <TableCell>
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString()
+                      : "No due date"}
+                  </TableCell>
 
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedTask(task);
-                        setDeleteOpen(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
+                  <TableCell className="text-right space-x-2">
+                    <EditTaskDialog task={task} />
+                    <DeleteTaskDialog taskId={task.id} />
                   </TableCell>
                 </TableRow>
               ))
