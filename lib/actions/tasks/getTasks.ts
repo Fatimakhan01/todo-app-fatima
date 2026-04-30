@@ -4,7 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-export async function getTasks(search?: string) {
+export async function getTasks({
+  search,
+  status,
+  priority,
+}: {
+  search?: string;
+  status?: string;
+  priority?: string;
+}) {
   const headersList = await headers();
 
   const session = await auth.api.getSession({
@@ -37,10 +45,27 @@ export async function getTasks(search?: string) {
           },
         ],
       }),
+
+      ...(status && {
+        status,
+      }),
+
+      ...(priority && {
+        priority,
+      }),
     },
 
     orderBy: {
       createdAt: "desc",
+    },
+
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      dueDate: true,
+      status: true,
+      priority: true,
     },
   });
 

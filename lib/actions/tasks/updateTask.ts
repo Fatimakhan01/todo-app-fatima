@@ -10,6 +10,8 @@ export async function updateTask(data: {
   title: string;
   description: string;
   dueDate: string;
+  status: string;
+  priority: string;
 }) {
   const headersList = await headers();
 
@@ -29,6 +31,8 @@ export async function updateTask(data: {
       title: data.title,
       description: data.description,
       dueDate: new Date(data.dueDate),
+      status: data.status,
+      priority: data.priority,
     },
   });
 

@@ -9,6 +9,7 @@ export async function createTask(data: {
   title: string;
   description: string;
   dueDate: string;
+  priority?: string;
 }) {
   const headersList = await headers();
 
@@ -25,6 +26,8 @@ export async function createTask(data: {
       title: data.title,
       description: data.description,
       dueDate: new Date(data.dueDate),
+      priority: data.priority || "medium", 
+      status: "pending",                  
       userId: session.user.id,
     },
   });
