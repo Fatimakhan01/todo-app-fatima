@@ -17,6 +17,8 @@ interface Task {
   title: string;
   description: string | null;
   dueDate: string | Date | null;
+  status: "pending" | "completed";
+  priority: "low" | "medium" | "high";
 }
 
 interface TaskTableProps {
@@ -34,6 +36,10 @@ export default function TaskTable({ tasks }: TaskTableProps) {
               <TableHead>Task Title</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Due Date</TableHead>
+
+              <TableHead>Status</TableHead>
+              <TableHead>Priority</TableHead>
+
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -41,7 +47,7 @@ export default function TaskTable({ tasks }: TaskTableProps) {
           <TableBody>
             {tasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-6">
+                <TableCell colSpan={6} className="text-center py-6">
                   No tasks available
                 </TableCell>
               </TableRow>
@@ -49,11 +55,39 @@ export default function TaskTable({ tasks }: TaskTableProps) {
               tasks.map((task) => (
                 <TableRow key={task.id}>
                   <TableCell>{task.title}</TableCell>
+
                   <TableCell>{task.description}</TableCell>
+
                   <TableCell>
                     {task.dueDate
                       ? new Date(task.dueDate).toLocaleDateString()
                       : "No due date"}
+                  </TableCell>
+
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        task.status === "completed"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {task.status}
+                    </span>
+                  </TableCell>
+
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        task.priority === "high"
+                          ? "bg-red-100 text-red-700"
+                          : task.priority === "medium"
+                          ? "bg-orange-100 text-orange-700"
+                          : "bg-blue-100 text-blue-700"
+                      }`}
+                    >
+                      {task.priority}
+                    </span>
                   </TableCell>
 
                   <TableCell className="text-right space-x-2">
@@ -65,6 +99,7 @@ export default function TaskTable({ tasks }: TaskTableProps) {
             )}
           </TableBody>
         </Table>
+
       </div>
     </div>
   );

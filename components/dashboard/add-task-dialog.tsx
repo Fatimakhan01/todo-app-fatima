@@ -20,6 +20,7 @@ export default function AddTaskDialog() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("medium");
 
   const handleSave = async () => {
     if (!title || !description || !dueDate) return;
@@ -29,11 +30,13 @@ export default function AddTaskDialog() {
         title,
         description,
         dueDate,
+        priority,
       });
 
       setTitle("");
       setDescription("");
       setDueDate("");
+      setPriority("medium");
       setOpen(false);
 
       router.refresh();
@@ -44,7 +47,7 @@ export default function AddTaskDialog() {
 
   return (
     <>
-      <div className="flex ">
+      <div className="flex">
         <Button
           className="bg-blue-600 hover:bg-blue-700"
           onClick={() => setOpen(true)}
@@ -85,6 +88,19 @@ export default function AddTaskDialog() {
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Priority</Label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="border rounded-md px-3 py-2 w-full"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
             </div>
 
             <div className="flex justify-end gap-2">
