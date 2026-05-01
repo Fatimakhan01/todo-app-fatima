@@ -19,8 +19,8 @@ interface EditTaskDialogProps {
     title: string;
     description: string | null;
     dueDate: string | Date | null;
-    status: "pending" | "completed";
-    priority: "low" | "medium" | "high";
+    status: string;
+    priority: string;
   };
 }
 

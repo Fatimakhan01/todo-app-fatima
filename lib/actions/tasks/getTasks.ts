@@ -8,10 +8,12 @@ export async function getTasks({
   search,
   status,
   priority,
+  sort,
 }: {
   search?: string;
   status?: string;
   priority?: string;
+  sort?: string;
 }) {
   const headersList = await headers();
 
@@ -24,6 +26,20 @@ export async function getTasks({
   }
 
   const trimmedSearch = search?.trim();
+
+  let orderBy: any = { createdAt: "desc" };
+
+  if (sort === "oldest") {
+    orderBy = { createdAt: "asc" };
+  }
+
+  if (sort === "dueDate") {
+    orderBy = { dueDate: "asc" };
+  }
+
+  if (sort === "priority") {
+    orderBy = { priority: "desc" };
+  }
 
   const tasks = await prisma.task.findMany({
     where: {
@@ -55,9 +71,7 @@ export async function getTasks({
       }),
     },
 
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy,
 
     select: {
       id: true,
