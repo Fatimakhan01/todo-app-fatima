@@ -6,6 +6,7 @@ import SubscribeSection from "@/components/dashboard/subscribe-section";
 import SearchInput from "@/components/tasks/search-input";
 import Filters from "@/components/tasks/filters";
 import SortSelect from "@/components/tasks/sort-select";
+import Pagination from "@/components/tasks/pagination";
 import { getTasks } from "@/lib/actions/tasks/getTasks";
 
 export default async function DashboardPage({ searchParams }: any) {
@@ -15,13 +16,15 @@ export default async function DashboardPage({ searchParams }: any) {
   const status = params?.status || "";
   const priority = params?.priority || "";
   const sort = params?.sort || "";
+  const page = Number(params?.page) || 1;
 
-  const tasks = await getTasks({
-    search,
-    status,
-    priority,
-    sort,
-  });
+  const { tasks, totalPages, currentPage } = await getTasks({
+   search,
+   status,
+   priority,
+   sort,
+   page,
+ });
 
   return (
     <div>
@@ -46,6 +49,10 @@ export default async function DashboardPage({ searchParams }: any) {
       <TaskTable tasks={tasks} />
 
       <SubscribeSection />
+
+      <div className="mt-8 px-4">
+        <Pagination currentPage={currentPage} totalPages={totalPages} />
+      </div>
     </div>
   );
 }
