@@ -22,10 +22,14 @@ export default function AddTaskDialog() {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("medium");
 
+  const [error, setError] = useState(""); // 🔥 NEW
+
   const handleSave = async () => {
     if (!title || !description || !dueDate) return;
 
     try {
+      setError(""); 
+
       await createTask({
         title,
         description,
@@ -40,8 +44,15 @@ export default function AddTaskDialog() {
       setOpen(false);
 
       router.refresh();
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      console.error(err);
+
+      const message =
+        err?.message ||
+        "Something went wrong. Please try again.";
+
+      setError(message);       
+      alert(message);         
     }
   };
 
@@ -65,6 +76,13 @@ export default function AddTaskDialog() {
           </DialogHeader>
 
           <div className="space-y-4 mt-4">
+
+            {error && (
+              <p className="text-red-500 text-sm">
+                {error}
+              </p>
+            )}
+
             <div className="space-y-2">
               <Label>Task Title</Label>
               <Input

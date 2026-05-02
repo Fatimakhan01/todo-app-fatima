@@ -9,11 +9,13 @@ export async function getTasks({
   status,
   priority,
   sort,
+  page = 1,
 }: {
   search?: string;
   status?: string;
   priority?: string;
   sort?: string;
+  page?: number;
 }) {
   const headersList = await headers();
 
@@ -27,52 +29,50 @@ export async function getTasks({
 
   const trimmedSearch = search?.trim();
 
+  const limit = 5;
+  const skip = (page - 1) * limit;
+
+  const where = {
+    userId: session.user.id,
+
+    ...(trimmedSearch && {
+      OR: [
+        {
+          title: {
+            contains: trimmedSearch,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          description: {
+            contains: trimmedSearch,
+            mode: "insensitive" as const,
+          },
+        },
+      ],
+    }),
+
+    ...(status && { status }),
+    ...(priority && { priority }),
+  };
+
   let orderBy: any = { createdAt: "desc" };
 
-  if (sort === "oldest") {
-    orderBy = { createdAt: "asc" };
-  }
+  if (sort === "oldest") orderBy = { createdAt: "asc" };
+  if (sort === "dueDate") orderBy = { dueDate: "asc" };
+  if (sort === "priority") orderBy = { priority: "desc" };
 
-  if (sort === "dueDate") {
-    orderBy = { dueDate: "asc" };
-  }
+  const totalTasks = await prisma.task.count({
+    where,
+  });
 
-  if (sort === "priority") {
-    orderBy = { priority: "desc" };
-  }
+  const totalPages = Math.ceil(totalTasks / limit);
 
   const tasks = await prisma.task.findMany({
-    where: {
-      userId: session.user.id,
-
-      ...(trimmedSearch && {
-        OR: [
-          {
-            title: {
-              contains: trimmedSearch,
-              mode: "insensitive",
-            },
-          },
-          {
-            description: {
-              contains: trimmedSearch,
-              mode: "insensitive",
-            },
-          },
-        ],
-      }),
-
-      ...(status && {
-        status,
-      }),
-
-      ...(priority && {
-        priority,
-      }),
-    },
-
+    where,
     orderBy,
-
+    skip,
+    take: limit,
     select: {
       id: true,
       title: true,
@@ -83,5 +83,9 @@ export async function getTasks({
     },
   });
 
-  return tasks;
+  return {
+    tasks,
+    totalPages,
+    currentPage: page,
+  };
 }
