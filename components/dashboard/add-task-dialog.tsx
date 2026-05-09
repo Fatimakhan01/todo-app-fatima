@@ -22,7 +22,7 @@ export default function AddTaskDialog() {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("medium");
 
-  const [error, setError] = useState(""); // 🔥 NEW
+  const [error, setError] = useState(""); 
 
   const handleSave = async () => {
     if (!title || !description || !dueDate) return;
