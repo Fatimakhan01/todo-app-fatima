@@ -11,14 +11,15 @@ export async function createTask(data: {
   dueDate: string;
   priority?: string;
 }) {
-  const headersList = await headers();
-
   const session = await auth.api.getSession({
-    headers: headersList,
+    headers: await headers(),
   });
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    return {
+      success: false,
+      error: "Unauthorized",
+    };
   }
 
   const userId = session.user.id;
@@ -34,7 +35,10 @@ export async function createTask(data: {
   });
 
   if (!isPro && tasksCount >= 5) {
-    throw new Error("Free users can only create up to 5 tasks. Upgrade to Pro.");
+    return {
+      success: false,
+      error: "Free users can only create up to 5 tasks. Upgrade to Pro.",
+    };
   }
 
   await prisma.task.create({
@@ -49,4 +53,8 @@ export async function createTask(data: {
   });
 
   revalidatePath("/dashboard");
+
+  return {
+    success: true,
+  };
 }
