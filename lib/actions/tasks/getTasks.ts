@@ -17,14 +17,16 @@ export async function getTasks({
   sort?: string;
   page?: number;
 }) {
-  const headersList = await headers();
-
   const session = await auth.api.getSession({
-    headers: headersList,
+    headers: await headers(),
   });
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    return {
+      tasks: [],
+      totalPages: 0,
+      currentPage: page,
+    };
   }
 
   const trimmedSearch = search?.trim();
@@ -32,26 +34,24 @@ export async function getTasks({
   const limit = 5;
   const skip = (page - 1) * limit;
 
-  const where = {
+  const where: any = {
     userId: session.user.id,
-
     ...(trimmedSearch && {
       OR: [
         {
           title: {
             contains: trimmedSearch,
-            mode: "insensitive" as const,
+            mode: "insensitive",
           },
         },
         {
           description: {
             contains: trimmedSearch,
-            mode: "insensitive" as const,
+            mode: "insensitive",
           },
         },
       ],
     }),
-
     ...(status && { status }),
     ...(priority && { priority }),
   };
