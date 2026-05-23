@@ -14,6 +14,9 @@ export default function AIChatClient({
   initialMessages,
 }: AIChatClientProps) {
   const [input, setInput] = useState("");
+  const [error, setError] = useState<string | null>(
+    null
+  );
 
   const {
     messages,
@@ -21,6 +24,24 @@ export default function AIChatClient({
     status,
   } = useChat({
     messages: initialMessages,
+
+    onError(error) {
+      console.log(error);
+
+      if (
+        error.message.includes(
+          "Daily AI limit reached"
+        )
+      ) {
+        setError(
+          "Daily limit reached (10 prompts). Upgrade to Pro."
+        );
+      } else {
+        setError(
+          "AI request failed. Try again."
+        );
+      }
+    },
   });
 
   async function handleSubmit(
@@ -29,6 +50,8 @@ export default function AIChatClient({
     e.preventDefault();
 
     if (!input.trim()) return;
+
+    setError(null);
 
     await sendMessage({
       text: input,
@@ -47,6 +70,12 @@ export default function AIChatClient({
         <p className="text-sm text-muted-foreground">
           Ask questions about your tasks
         </p>
+
+        {error && (
+          <div className="mt-2 rounded-md bg-red-100 px-3 py-2 text-sm text-red-600">
+            {error}
+          </div>
+        )}
       </div>
 
       <ChatWindow
