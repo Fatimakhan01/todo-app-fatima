@@ -5,10 +5,55 @@ import {
 
 import { model } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+
+import {
+  checkAIUsage,
+  incrementAIUsage,
+} from "@/lib/ai/usage";
 
 export async function POST(req: Request) {
   try {
-    const userId = "temporary-user";
+    const session = await auth.api.getSession({
+  headers: await headers(),
+});
+
+if (!session?.user?.id) {
+  return Response.json(
+    { error: "Unauthorized" },
+    { status: 401 }
+  );
+}
+
+const userId = session.user.id;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    const isPro =
+      user?.subscriptionPlan === "pro";
+
+    const usageCheck =
+      await checkAIUsage(
+        userId,
+        isPro
+      );
+
+    if (!usageCheck.allowed) {
+      return Response.json(
+        {
+          error:
+            "Daily AI limit reached. Upgrade to Pro.",
+        },
+        {
+          status: 429,
+        }
+      );
+    }
 
     const { messages } = await req.json();
 
@@ -42,6 +87,9 @@ export async function POST(req: Request) {
     }
 
     const tasks = await prisma.task.findMany({
+      where: {
+        userId,
+      },
       take: 10,
       orderBy: {
         createdAt: "desc",
@@ -90,6 +138,15 @@ ${taskContext}
                 conversation.id,
             },
           });
+        }
+
+        if (
+          !isPro &&
+          usageCheck.usage?.id
+        ) {
+          await incrementAIUsage(
+            usageCheck.usage.id
+          );
         }
       },
     });

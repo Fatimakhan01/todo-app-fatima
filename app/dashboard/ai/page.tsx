@@ -1,8 +1,19 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+
 import AIChatClient from "@/components/ai/AIChatClient";
 
 export default async function AIPage() {
-  const userId = "temporary-user";
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  const userId = session.user.id;
 
   const conversation =
     await prisma.conversation.findFirst({
