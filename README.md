@@ -1,19 +1,19 @@
-# 🚀 SaaS To-Do Application (Next.js + Stripe)
+# SaaS To-Do Application (Next.js + Stripe)
 
 A full-stack SaaS To-Do application built with Next.js, Prisma, PostgreSQL, and Stripe.
 This app allows users to manage tasks with a subscription-based model (Free & Pro plans).
 
 ---
 
-## 🧩 Features
+##  Features
 
-### ✅ Core Features
+### Core Features
 
 * User Authentication (Better Auth)
 * Create, Read, Update, Delete (CRUD) Tasks
 * Responsive UI with Tailwind CSS & shadcn/ui
 
-### 💳 SaaS Features
+###  SaaS Features
 
 * Stripe Checkout Integration
 * Subscription Plans (Free, Pro)
@@ -23,7 +23,7 @@ This app allows users to manage tasks with a subscription-based model (Free & Pr
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -45,7 +45,7 @@ This app allows users to manage tasks with a subscription-based model (Free & Pr
 
 ---
 
-## ⚙️ Environment Variables
+##  Environment Variables
 
 Create a `.env` file and add:
 
@@ -66,7 +66,7 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 ---
 
-## 🧠 How It Works
+##  How It Works
 
 ### 1. Subscription Flow
 
@@ -85,7 +85,7 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 ---
 
-## 🔄 Webhook Setup
+##  Webhook Setup
 
 Run Stripe CLI:
 
@@ -97,7 +97,7 @@ Copy webhook secret to `.env`.
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ```bash
 npm install
